@@ -53,6 +53,16 @@ const paint = () => {
   // HINT:
   //   https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
   //   https://developer.mozilla.org/en-US/docs/Web/API/Element/getElementsByTagName
+    for (let i = 0; i < tds.length; i++) {
+      const td = tds[i];
+      const row = parseInt(td.dataset.row);
+      const col = parseInt(td.dataset.col);
+      if (gol.getCell(row, col) === 1) {
+        td.classList.add("alive");
+      } else {
+        td.classList.remove("alive");
+      }
+    }
 }
 
 
@@ -60,12 +70,26 @@ const paint = () => {
  * Event Listeners
  */
 
+let intervalId = null;
 document.getElementById("board").addEventListener("click", event => {
   // TODO: Toggle clicked cell (event.target) and paint
+  if (event.target.tagName === "TD") {
+    if(intervalId !==null){
+      clearInterval(intervalId);
+      intervalId = null
+      document.getElementById("play_btn").textContent = "Play";
+    }
+    const row = parseInt(event.target.dataset.row);
+    const col = parseInt(event.target.dataset.col);
+    gol.toggleCell(row, col);
+    paint();
+  }
 });
 
 document.getElementById("step_btn").addEventListener("click", event => {
   // TODO: Do one gol tick and paint
+  gol.tick();
+  paint();
 });
 
 document.getElementById("play_btn").addEventListener("click", event => {
@@ -73,12 +97,31 @@ document.getElementById("play_btn").addEventListener("click", event => {
   // repeatedly every fixed time interval.
   // HINT:
   // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval
+  if (intervalId === null) {
+    intervalId = setInterval(() => {
+      gol.tick();
+      paint();
+    }, 500); // every 500 milliseconds
+  }
 });
 
 document.getElementById("random_btn").addEventListener("click", event => {
   // TODO: Randomize the board and paint
+  for (let r = 0; r < gol.height; r++) {
+    for (let c = 0; c < gol.width; c++) {
+      const randomValue = Math.random() < 0.5 ? 0 : 1;
+      gol.setCell(randomValue, r, c);
+    }
+  }
+  paint();
 });
 
 document.getElementById("clear_btn").addEventListener("click", event => {
   // TODO: Clear the board and paint
+  for (let r = 0; r < gol.height; r++) {
+    for (let c = 0; c < gol.width; c++) {
+      gol.setCell(0, r, c);
+    }
+  }
+  paint();
 });
