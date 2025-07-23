@@ -21,7 +21,7 @@ class GameOfLife {
     return anEmptyArr
   }
 
-getcell(row,col){
+getCell(row,col){
   if(row<0 || row>=this.height || col<0 || col>=this.width){
     return 0;  //already dead so will return 0
   }
@@ -35,7 +35,7 @@ setCell(value, row, col){
 }
 
 toggleCell(row,col){
-  let currentVal = this.getcell(row, col)
+  let currentVal = this.getCell(row, col)
   let newVal = currentVal ===1? 0 : 1
   this.setCell(newVal,row,col);
 }
@@ -43,12 +43,12 @@ toggleCell(row,col){
   livingNeighbors(row, col) {
     // TODO: Return the count of living neighbors.
     let count = 0;
-    for(let r=row-1;r<row+1;r++){
-      for(let c=col-1;c<col+1;c++){
-        if(r===row && c===col){
+    for(let r=row-1;r<=row+1;r++){
+      for(let c=col-1;c<=col+1;c++){
+        if(r ===row && c ===col){
           continue;
         }
-        if(this.getcell(r,c)===1){
+        if(this.getCell(r,c)===1){
           count++;
         }
       }
@@ -82,8 +82,8 @@ toggleCell(row,col){
     const newBoard = this.makeBoard();
     for(let row = 0;row<this.height;row++){
       for(let col=0;col<this.width;col++){
-        const currentVal = this.getcell(row,col)
-        const neighbors = this.neighbors(row,col)
+        const currentVal = this.getCell(row,col)
+        const neighbors = this.livingNeighbors(row,col)
         const newVal = this.conwayRules(currentVal,neighbors)
         newBoard[row][col]=newVal;
       }
