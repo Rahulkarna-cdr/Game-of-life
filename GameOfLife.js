@@ -10,26 +10,69 @@ class GameOfLife {
    */
 
   makeBoard() {
-    // TODO: Create and return an 2D Array 
-    // with `this.heigh` as rows and `this.width` as cols.
-    // For example, given a height of 4 and a width of 3, it will generate:
-    // [
-    //  [0, 0, 0],
-    //  [0, 0, 0],
-    //  [0, 0, 0],
-    //  [0, 0, 0],
-    // ]
+    let anEmptyArr = []
+    for(let i=0;i<this.height;i++){
+      let row = []
+      for(let j=0;j<this.width;j++){
+        row.push(0)
+      }
+      anEmptyArr.push(row)
+    }
+    return anEmptyArr
   }
 
+getcell(row,col){
+  if(row<0 || row>=this.height || col<0 || col>=this.width){
+    return 0;  //already dead so will return 0
+  }
+  return this.board[row][col] //if not then return the element in 2d array
+}
 
-  /**
-   * Return the amount of living neighbors around a given coordinate.
-   */
+setCell(value, row, col){
+  if(row>=0 && row<this.height && col>=0 && col<this.width){
+    this.board[row][col] = value;
+  }
+}
+
+toggleCell(row,col){
+  let currentVal = this.getcell(row, col)
+  let newVal = currentVal ===1? 0 : 1
+  this.setCell(newVal,row,col);
+}
 
   livingNeighbors(row, col) {
     // TODO: Return the count of living neighbors.
+    let count = 0;
+    for(let r=row-1;r<row+1;r++){
+      for(let c=col-1;c<col+1;c++){
+        if(r===row && c===col){
+          continue;
+        }
+        if(this.getcell(r,c)===1){
+          count++;
+        }
+      }
+    }
+    return count;
   }
 
+  conwayRules(currentVal, livingNeighbors){
+    if (currentVal ===1 && livingNeighbors<2){
+      return 0;
+    }
+    else if(currentVal ===1 && livingNeighbors >3){
+      return 0;
+    }
+    else if(currentVal === 1 && (livingNeighbors ===2 || livingNeighbors ===3)){
+      return 1;
+    }
+    else if(currentVal ===0 && livingNeighbors===3){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
 
   /**
    * Given the present board, apply the rules to generate a new board
@@ -37,6 +80,14 @@ class GameOfLife {
   
   tick() {
     const newBoard = this.makeBoard();
+    for(let row = 0;row<this.height;row++){
+      for(let col=0;col<this.width;col++){
+        const currentVal = this.getcell(row,col)
+        const neighbors = this.neighbors(row,col)
+        const newVal = this.conwayRules(currentVal,neighbors)
+        newBoard[row][col]=newVal;
+      }
+    }
     // TODO: Here is where you want to loop through all the cells
     // on the existing board and determine, based on it's neighbors,
     // whether the cell should be dead or alive in the new board 
